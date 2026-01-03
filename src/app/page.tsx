@@ -8,8 +8,10 @@ import Image from "next/image";
 export default function HomePage() {
   const router = useRouter();
   const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -17,35 +19,39 @@ export default function HomePage() {
       router.push("/login");
       return;
     }
-    fetchProducts();
+    fetchData();
   }, []);
 
-  const fetchProducts = async (query = "") => {
-    setLoading(true);
+  const fetchData = async () => {
     try {
-      const url = query
-        ? `/api/products/search?q=${encodeURIComponent(query)}`
-        : "/api/products?limit=50";
+      const [productsRes, categoriesRes] = await Promise.all([
+        fetch("/api/products?limit=100"),
+        fetch("/api/categories"),
+      ]);
 
-      const response = await fetch(url);
-      const data = await response.json();
+      const productsData = await productsRes.json();
+      const categoriesData = await categoriesRes.json();
 
-      setProducts(data.data || []);
+      setProducts(productsData.data || []);
+      setCategories(categoriesData.data || []);
     } catch (error) {
-      console.error("Failed to fetch products:", error);
+      console.error("Failed to fetch data:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Debounce search to avoid too many requests
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchProducts(searchQuery);
-    }, 300);
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (product.size &&
+        product.size.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesCategory = selectedCategory
+      ? product.category_id === selectedCategory
+      : true;
 
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -57,6 +63,12 @@ export default function HomePage() {
               className="text-2xl font-bold text-gray-900"
             >
               Shop Management
+            </Link>
+            <Link
+              href="/dashboard"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Dashboard
             </Link>
           </div>
         </div>
@@ -73,16 +85,30 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Search Bar */}
-        <div className="mb-6">
-          <div className="flex gap-2">
+        {/* Filters */}
+        <div className="bg-white p-4 rounded-lg shadow mb-6 flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search products..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
             />
+          </div>
+          <div className="w-full md:w-64">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+            >
+              <option value="">All Categories</option>
+              {categories.map((cat: any) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -91,13 +117,13 @@ export default function HomePage() {
           <div className="text-center py-12">
             <p className="text-gray-600">Loading products...</p>
           </div>
-        ) : products.length === 0 ? (
+        ) : filteredProducts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600">No products found</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <div
                 key={product.id}
                 className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow"
