@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { getDataSource } from "@/lib/db";
+import { User } from "@/entities/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -15,10 +16,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const res = await query("SELECT * FROM users WHERE username = $1", [
-      username,
-    ]);
-    const user = res.rows[0];
+    const dataSource = await getDataSource();
+    const userRepo = dataSource.getRepository(User);
+
+    const user = await userRepo.findOne({
+      where: { username },
+      select: ["id", "username", "password", "role"],
+    });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return NextResponse.json(
@@ -28,7 +32,6 @@ export async function POST(request: Request) {
     }
 
     const secret = process.env.JWT_SECRET || "fallback_dev_secret_key_123";
-    console.log("Using secret (length):", secret.length); // Debug log
 
     const token = jwt.sign(
       { userId: user.id, username: user.username, role: user.role },
@@ -52,10 +55,10 @@ export async function POST(request: Request) {
     });
 
     return response;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Login error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: error.message },
       { status: 500 }
     );
   }

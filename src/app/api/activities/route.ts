@@ -1,28 +1,29 @@
 import { NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { getDataSource } from "@/lib/db";
+import { Activity } from "@/entities/Activity";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const limit = searchParams.get("limit") || "10";
+    const limit = parseInt(searchParams.get("limit") || "10");
 
-    // Fetch activities properly ordered
-    // Note: Assuming table exists as per schema
-    const res = await query(
-      "SELECT * FROM activities ORDER BY created_at DESC LIMIT $1",
-      [limit]
-    );
-    const totalRes = await query("SELECT COUNT(*) FROM activities");
+    const dataSource = await getDataSource();
+    const activityRepo = dataSource.getRepository(Activity);
+
+    const [activities, total] = await activityRepo.findAndCount({
+      order: { created_at: "DESC" },
+      take: limit,
+    });
 
     return NextResponse.json({
-      data: res.rows,
+      data: activities,
       pagination: {
-        total: parseInt(totalRes.rows[0].count),
+        total,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     return NextResponse.json(
-      { error: "Failed to fetch activities" },
+      { error: "Failed to fetch activities", details: error.message },
       { status: 500 }
     );
   }

@@ -1,12 +1,14 @@
-import { Pool } from "pg";
+import { AppDataSource } from "../app-data-source";
 
-const pool = new Pool({
-  host: process.env.DATABASE_HOST || "localhost",
-  port: parseInt(process.env.DATABASE_PORT || "5432"),
-  user: process.env.DATABASE_USER || "shop_user",
-  password: process.env.DATABASE_PASSWORD || "shop_password",
-  database: process.env.DATABASE_NAME || "shop_db",
-});
+export const getDataSource = async () => {
+  if (!AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
+  }
+  return AppDataSource;
+};
 
-export const query = (text: string, params?: any[]) => pool.query(text, params);
-export default pool;
+// Deprecated: kept for backward compatibility if needed, but should be removed eventually
+export const query = async (text: string, params?: any[]) => {
+  const dataSource = await getDataSource();
+  return dataSource.query(text, params);
+};
