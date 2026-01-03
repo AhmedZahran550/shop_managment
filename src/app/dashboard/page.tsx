@@ -7,6 +7,7 @@ import Link from "next/link";
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [recentProducts, setRecentProducts] = useState<any[]>([]);
   const [stats, setStats] = useState({
     totalProducts: 0,
     recentActivities: 0,
@@ -28,13 +29,14 @@ export default function DashboardPage() {
   const fetchStats = async () => {
     try {
       const [productsRes, activitiesRes] = await Promise.all([
-        fetch("/api/products?limit=1"),
+        fetch("/api/products?limit=5"), // Fetch 5 items for the list
         fetch("/api/activities?limit=1"),
       ]);
 
       const productsData = await productsRes.json();
       const activitiesData = await activitiesRes.json();
 
+      setRecentProducts(productsData.data || []);
       setStats({
         totalProducts: productsData.pagination?.total || 0,
         recentActivities: activitiesData.pagination?.total || 0,
@@ -107,6 +109,66 @@ export default function DashboardPage() {
             <p className="text-2xl font-bold text-purple-600 capitalize">
               {user.role}
             </p>
+          </div>
+        </div>
+
+        {/* Recent Products */}
+        <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Recent Products
+            </h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Product Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Price
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Selling Price
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {recentProducts.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={3}
+                      className="px-6 py-4 text-center text-sm text-gray-500"
+                    >
+                      No products found
+                    </td>
+                  </tr>
+                ) : (
+                  recentProducts.map((product) => (
+                    <tr key={product.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {product.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${product.base_price}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${product.selling_price}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          <div className="px-6 py-4 bg-gray-50 text-right">
+            <Link
+              href="/products"
+              className="text-sm font-medium text-blue-600 hover:text-blue-500"
+            >
+              View all products →
+            </Link>
           </div>
         </div>
 

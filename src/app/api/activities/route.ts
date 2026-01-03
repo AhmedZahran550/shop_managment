@@ -12,11 +12,12 @@ export async function GET(request: Request) {
       "SELECT * FROM activities ORDER BY created_at DESC LIMIT $1",
       [limit]
     );
+    const totalRes = await query("SELECT COUNT(*) FROM activities");
 
     return NextResponse.json({
       data: res.rows,
       pagination: {
-        total: res.rowCount,
+        total: parseInt(totalRes.rows[0].count),
       },
     });
   } catch (error) {

@@ -7,11 +7,12 @@ export async function GET(request: Request) {
     const limit = searchParams.get("limit") || "50";
 
     const res = await query("SELECT * FROM products LIMIT $1", [limit]);
+    const totalRes = await query("SELECT COUNT(*) FROM products");
 
     return NextResponse.json({
       data: res.rows,
       pagination: {
-        total: res.rowCount,
+        total: parseInt(totalRes.rows[0].count),
       },
     });
   } catch (error) {
