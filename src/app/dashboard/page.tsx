@@ -8,11 +8,80 @@ export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
   const [stats, setStats] = useState({
     totalProducts: 0,
     recentActivities: 0,
   });
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(
+        `/api/products?limit=100&search=${encodeURIComponent(
+          searchQuery
+        )}&categoryId=${selectedCategory}&sort=${sortOrder}`
+      );
+      const data = await res.json();
+      setProducts(data.data || []);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const [activitiesRes] = await Promise.all([
+        fetch("/api/activities?limit=1"),
+      ]);
+
+      const activitiesData = await activitiesRes.json();
+
+      setStats((prev) => ({
+        ...prev,
+        recentActivities: activitiesData.pagination?.total || 0,
+      }));
+      fetchTotalProductsCount();
+    } catch (error) {
+      console.error("Failed to fetch stats:", error);
+    }
+  };
+
+  const fetchTotalProductsCount = async () => {
+    try {
+      const res = await fetch("/api/products?limit=1");
+      const data = await res.json();
+      setStats((prev) => ({
+        ...prev,
+        totalProducts: data.pagination?.total || 0,
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/categories");
+      const data = await res.json();
+      setCategories(data.data || []);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    localStorage.removeItem("user");
+    router.push("/login");
+  };
 
   useEffect(() => {
     // Check if user is logged in
@@ -23,58 +92,40 @@ export default function DashboardPage() {
     }
     setUser(JSON.parse(userData));
 
-    // Fetch stats
+    // Fetch initial data
     fetchStats();
+    fetchCategories();
   }, []);
 
-  const fetchStats = async () => {
-    try {
-      const [productsRes, activitiesRes] = await Promise.all([
-        fetch("/api/products?limit=100"), // Fetch more items for the main view
-        fetch("/api/activities?limit=1"),
-      ]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchProducts();
+    }, 500);
 
-      const productsData = await productsRes.json();
-      const activitiesData = await activitiesRes.json();
-
-      setProducts(productsData.data || []);
-      setStats({
-        totalProducts: productsData.pagination?.total || 0,
-        recentActivities: activitiesData.pagination?.total || 0,
-      });
-    } catch (error) {
-      console.error("Failed to fetch stats:", error);
-    }
-  };
-
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    localStorage.removeItem("user");
-    router.push("/login");
-  };
+    return () => clearTimeout(timer);
+  }, [searchQuery, selectedCategory, sortOrder]);
 
   if (!user) return null;
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Server-side filtered now
+  const filteredProducts = products;
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
+          <div className="flex flex-col sm:flex-row justify-between h-auto sm:h-16 items-center py-4 sm:py-0 gap-4 sm:gap-0">
             <h1 className="text-2xl font-bold text-gray-900">
               Shop Management
             </h1>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
               <span className="text-sm text-gray-600">
                 {user.username} ({user.role})
               </span>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
               >
                 Logout
               </button>
@@ -119,34 +170,87 @@ export default function DashboardPage() {
 
         {/* Product Search and Grid */}
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <h3 className="text-xl font-bold text-gray-900">All Products</h3>
-            <div className="relative w-64">
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <svg
-                className="w-5 h-5 text-gray-400 absolute left-3 top-2.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center w-full sm:w-auto">
+              {user.role === "admin" && (
+                <Link
+                  href="/products/new"
+                  className="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 px-4 shadow-sm"
+                  title="Add New Product"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  <span>Add Product</span>
+                </Link>
+              )}
+              <div className="relative w-full sm:w-64">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium"
                 />
-              </svg>
+                <svg
+                  className="w-5 h-5 text-gray-400 absolute left-3 top-2.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredProducts.length === 0 ? (
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium"
+            >
+              <option value="">All Categories</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium"
+            >
+              <option value="recent">Recently Added</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {isLoading ? (
+              <div className="col-span-full text-center py-8 text-gray-500">
+                Loading products...
+              </div>
+            ) : filteredProducts.length === 0 ? (
               <div className="col-span-full text-center py-8 text-gray-500">
                 No products found matching "{searchQuery}"
               </div>
@@ -191,30 +295,6 @@ export default function DashboardPage() {
                 </div>
               ))
             )}
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">
-            Quick Actions
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {user.role === "admin" && (
-              <Link
-                href="/products/new"
-                className="bg-green-600 text-white px-6 py-4 rounded-lg hover:bg-green-700 transition-colors text-center font-semibold"
-              >
-                Add New Product
-              </Link>
-            )}
-
-            <Link
-              href="/activities"
-              className="bg-purple-600 text-white px-6 py-4 rounded-lg hover:bg-purple-700 transition-colors text-center font-semibold"
-            >
-              View Activities
-            </Link>
           </div>
         </div>
       </main>
