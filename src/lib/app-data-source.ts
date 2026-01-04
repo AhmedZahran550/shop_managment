@@ -13,7 +13,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DATABASE_PASSWORD || "shop_password",
   database: process.env.DATABASE_NAME || "shop_db",
   synchronize: false, // Don't auto-sync schema in production safe mode
-  logging: process.env.NODE_ENV === "development",
+  logging: false,
   entities: [User, Product, Category, Activity],
   subscribers: [],
   migrations: [],

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getDataSource } from "@/lib/db";
 import { Product } from "@/entities/Product";
 import { ILike } from "typeorm";
+import { getCurrentUser } from "@/lib/server-auth";
+import { logActivity } from "@/lib/activity-logger";
 
 export async function GET(request: Request) {
   try {
@@ -107,6 +109,18 @@ export async function POST(request: Request) {
     });
 
     await productRepo.save(newProduct);
+
+    // Log activity
+    const user = await getCurrentUser();
+    if (user) {
+      await logActivity(
+        user.userId,
+        "created product",
+        "product",
+        newProduct.id,
+        { name: newProduct.name }
+      );
+    }
 
     return NextResponse.json(
       {

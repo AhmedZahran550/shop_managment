@@ -22,6 +22,12 @@ export class Activity {
   @Column("jsonb", { nullable: true })
   details!: any;
 
+  @Column({ nullable: true })
+  entity_type!: string;
+
+  @Column("uuid", { nullable: true })
+  entity_id!: string;
+
   @CreateDateColumn()
   created_at!: Date;
 
