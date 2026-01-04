@@ -16,33 +16,47 @@ export async function GET(request: Request) {
     const dataSource = await getDataSource();
     const productRepo = dataSource.getRepository(Product);
 
-    const where: any = {};
-    if (search) {
-      where.name = ILike(`%${search}%`);
-    }
-    if (categoryId) {
-      where.category_id = categoryId;
+    let query = productRepo
+      .createQueryBuilder("product")
+      .leftJoinAndSelect("product.category", "category");
+
+    // PostgreSQL full-text search using tsvector
+    // Searches across: product name, size, weight, and category name
+    if (search && search.trim()) {
+      query = query.where(
+        "product.search_vector @@ plainto_tsquery('simple', :search)",
+        { search: search.trim() }
+      );
     }
 
-    const order: any = {};
+    // Filter by category
+    if (categoryId) {
+      if (search && search.trim()) {
+        query = query.andWhere("product.category_id = :categoryId", {
+          categoryId,
+        });
+      } else {
+        query = query.where("product.category_id = :categoryId", {
+          categoryId,
+        });
+      }
+    }
+
+    // Sorting
     switch (sort) {
       case "price_asc":
-        order.selling_price = "ASC";
+        query = query.orderBy("product.selling_price", "ASC");
         break;
       case "price_desc":
-        order.selling_price = "DESC";
+        query = query.orderBy("product.selling_price", "DESC");
         break;
       case "recent":
       default:
-        order.created_at = "DESC";
+        query = query.orderBy("product.created_at", "DESC");
         break;
     }
 
-    const [products, total] = await productRepo.findAndCount({
-      where,
-      order,
-      take: limit,
-    });
+    const [products, total] = await query.take(limit).getManyAndCount();
 
     return NextResponse.json({
       data: products,
