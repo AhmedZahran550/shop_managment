@@ -19,6 +19,18 @@ export default function DashboardPage() {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  // Edit and Delete state
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [deleteProduct, setDeleteProduct] = useState<any>(null);
+  const [confirmAction, setConfirmAction] = useState<string | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    categoryId: "",
+    basePrice: "",
+    sellingPrice: "",
+  });
+  const [editImage, setEditImage] = useState<File | null>(null);
+
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
@@ -83,6 +95,76 @@ export default function DashboardPage() {
     router.push("/login");
   };
 
+  const handleEditClick = (product: any) => {
+    setEditingProduct(product);
+    setEditFormData({
+      name: product.name,
+      categoryId: product.category_id,
+      basePrice: product.base_price.toString(),
+      sellingPrice: product.selling_price.toString(),
+    });
+    setEditImage(null);
+    setConfirmAction(null);
+  };
+
+  const handleEditSubmit = async () => {
+    if (confirmAction !== "update") {
+      setConfirmAction("update");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("name", editFormData.name);
+      formData.append("categoryId", editFormData.categoryId);
+      formData.append("basePrice", editFormData.basePrice);
+      formData.append("sellingPrice", editFormData.sellingPrice);
+      if (editImage) {
+        formData.append("image", editImage);
+      }
+
+      const res = await fetch(`/api/products/${editingProduct.id}`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      if (res.ok) {
+        setEditingProduct(null);
+        setConfirmAction(null);
+        fetchProducts();
+      } else {
+        alert("Failed to update product");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error updating product");
+    }
+  };
+
+  const handleDeleteClick = (product: any) => {
+    setDeleteProduct(product);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteProduct) return;
+
+    try {
+      const res = await fetch(`/api/products/${deleteProduct.id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setDeleteProduct(null);
+        fetchProducts();
+      } else {
+        alert("Failed to delete product");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error deleting product");
+    }
+  };
+
   useEffect(() => {
     // Check if user is logged in
     const userData = localStorage.getItem("user");
@@ -128,12 +210,14 @@ export default function DashboardPage() {
                 >
                   الفئات
                 </Link>
-                <Link
-                  href="/dashboard/users"
-                  className="px-4 py-2 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-white rounded-lg transition-all"
-                >
-                  المستخدمين
-                </Link>
+                {user.role === "admin" && (
+                  <Link
+                    href="/dashboard/users"
+                    className="px-4 py-2 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-white rounded-lg transition-all"
+                  >
+                    المستخدمين
+                  </Link>
+                )}
               </div>
             )}
             <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
@@ -302,6 +386,48 @@ export default function DashboardPage() {
                     <h4 className="font-bold text-lg text-slate-900 mb-3 truncate leading-snug">
                       {product.name}
                     </h4>
+                    {(user.role === "admin" || user.role === "worker") && (
+                      <div className="flex gap-2 mb-3">
+                        <button
+                          onClick={() => handleEditClick(product)}
+                          className="flex-1 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-2 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-1"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
+                          </svg>
+                          تعديل
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(product)}
+                          className="flex-1 bg-red-50 text-red-600 hover:bg-red-100 px-3 py-2 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-1"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                          حذف
+                        </button>
+                      </div>
+                    )}
                     <div className="flex justify-between items-end border-t border-slate-100 pt-4">
                       <div>
                         <p className="text-xs font-semibold text-slate-400 mb-0.5">
@@ -327,6 +453,176 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+
+      {/* Edit Product Modal */}
+      {editingProduct && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200">
+              <h2 className="text-2xl font-black text-slate-800">
+                تعديل الصنف
+              </h2>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  اسم الصنف
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.name}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, name: e.target.value })
+                  }
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  الفئة
+                </label>
+                <select
+                  value={editFormData.categoryId}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      categoryId: e.target.value,
+                    })
+                  }
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    السعر الأساسي
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editFormData.basePrice}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        basePrice: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    سعر البيع
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editFormData.sellingPrice}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        sellingPrice: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  صورة جديدة (اختياري)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setEditImage(e.target.files?.[0] || null)}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500"
+                />
+              </div>
+            </div>
+            <div className="p-6 border-t border-slate-200 flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setEditingProduct(null);
+                  setConfirmAction(null);
+                }}
+                className="px-6 py-2.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-xl font-bold transition-colors"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={handleEditSubmit}
+                className={`px-6 py-2.5 rounded-xl font-bold transition-colors ${
+                  confirmAction === "update"
+                    ? "bg-amber-600 text-white hover:bg-amber-700"
+                    : "bg-indigo-600 text-white hover:bg-indigo-700"
+                }`}
+              >
+                {confirmAction === "update" ? "تأكيد التحديث" : "تحديث"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteProduct && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-red-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-slate-800">
+                    تأكيد الحذف
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    هذا الإجراء لا يمكن التراجع عنه
+                  </p>
+                </div>
+              </div>
+              <p className="text-slate-600 mb-6">
+                هل أنت متأكد من حذف الصنف{" "}
+                <span className="font-bold">{deleteProduct.name}</span>؟
+              </p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setDeleteProduct(null)}
+                  className="px-6 py-2.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-xl font-bold transition-colors"
+                >
+                  إلغاء
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="px-6 py-2.5 bg-red-600 text-white hover:bg-red-700 rounded-xl font-bold transition-colors"
+                >
+                  حذف
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

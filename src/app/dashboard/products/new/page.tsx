@@ -131,7 +131,7 @@ export default function AddProductPage() {
                 value={formData.name}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900 font-medium bg-slate-50 transition-all shadow-sm"
-                placeholder="مثال: سماعة لاسلكية"
+                placeholder="مثال: شامبو كلير "
               />
             </div>
 
