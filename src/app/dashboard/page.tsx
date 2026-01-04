@@ -318,10 +318,10 @@ export default function DashboardPage() {
                   placeholder="ابحث عن منتجات..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900 font-medium bg-white transition-all shadow-sm"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-indigo-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-900 font-semibold bg-white transition-all shadow-md hover:shadow-lg placeholder:text-slate-400"
                 />
                 <svg
-                  className="w-5 h-5 text-slate-400 absolute left-3 top-3"
+                  className="w-5 h-5 text-indigo-500 absolute left-4 top-3.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -329,7 +329,7 @@ export default function DashboardPage() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth="2"
+                    strokeWidth="2.5"
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
