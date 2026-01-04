@@ -1,5 +1,6 @@
 import { query } from "../index";
 import bcrypt from "bcryptjs";
+import { ShopCategory } from "../../constants/categories";
 
 async function seed() {
   console.log("🌱 Starting seed...");
@@ -23,12 +24,20 @@ async function seed() {
     console.log("✅ Users seeded");
 
     // 2. Create Categories
-    const categoriesResult = await query(`
+    const categoryValues = Object.values(ShopCategory);
+
+    // Construct values string for SQL
+    const valuesString = categoryValues.map((_, i) => `($${i + 1})`).join(", ");
+
+    const categoriesResult = await query(
+      `
         INSERT INTO categories (name)
-        VALUES ('Electronics'), ('Clothing'), ('Groceries')
+        VALUES ${valuesString}
         ON CONFLICT DO NOTHING
         RETURNING id, name
-    `);
+    `,
+      categoryValues
+    );
 
     // If no categories returned (already existed), fetch them
     let categories = categoriesResult.rows;
@@ -39,17 +48,35 @@ async function seed() {
     console.log("✅ Categories seeded");
 
     // 3. Create Products
-    const electronics = categories.find((c) => c.name === "Electronics");
-    if (electronics) {
+    const detergent = categories.find(
+      (c: any) => c.name === ShopCategory.LAUNDRY_POWDER
+    );
+    const shampoo = categories.find(
+      (c: any) => c.name === ShopCategory.SHAMPOO
+    );
+
+    if (detergent) {
       await query(
         `
             INSERT INTO products (name, category_id, base_price, selling_price, image_url)
             VALUES 
-            ('Smartphone X', $1, 500.00, 699.99, 'https://placehold.co/400x400'),
-            ('Laptop Pro', $1, 900.00, 1199.99, 'https://placehold.co/400x400')
+            ('مسحوق غسيل أوتوماتيك 5 كيلو', $1, 200.00, 250.00, 'https://placehold.co/400x400'),
+            ('مسحوق غسيل يدوي 1 كيلو', $1, 25.00, 35.00, 'https://placehold.co/400x400')
             ON CONFLICT DO NOTHING
         `,
-        [electronics.id]
+        [detergent.id]
+      );
+    }
+
+    if (shampoo) {
+      await query(
+        `
+            INSERT INTO products (name, category_id, base_price, selling_price, image_url)
+            VALUES 
+            ('شامبو بالصبار 400 مل', $1, 50.00, 75.00, 'https://placehold.co/400x400')
+            ON CONFLICT DO NOTHING
+        `,
+        [shampoo.id]
       );
     }
     console.log("✅ Products seeded");

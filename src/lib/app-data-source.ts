@@ -7,6 +7,7 @@ import { Activity } from "../entities/Activity";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
+  url: process.env.DATABASE_URL,
   host: process.env.DATABASE_HOST || "localhost",
   port: parseInt(process.env.DATABASE_PORT || "5432"),
   username: process.env.DATABASE_USER || "shop_user",
@@ -17,4 +18,11 @@ export const AppDataSource = new DataSource({
   entities: [User, Product, Category, Activity],
   subscribers: [],
   migrations: [],
+  ...(process.env.NODE_ENV === "production"
+    ? {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      }
+    : {}),
 });

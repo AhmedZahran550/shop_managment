@@ -7,13 +7,19 @@ import {
 } from "typeorm";
 import { Product } from "./Product";
 
+import { ShopCategory } from "@/lib/constants/categories";
+
 @Entity("categories")
 export class Category {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({ unique: true })
-  name!: string;
+  @Column({
+    type: "enum",
+    enum: ShopCategory,
+    unique: true,
+  })
+  name!: ShopCategory;
 
   @CreateDateColumn()
   created_at!: Date;
