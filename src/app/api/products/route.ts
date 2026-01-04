@@ -61,6 +61,11 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const user = await getCurrentUser();
+    if (!user || (user.role !== "admin" && user.role !== "worker")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
     const formData = await request.formData();
     const name = formData.get("name") as string;
     const categoryId = formData.get("categoryId") as string;
@@ -111,16 +116,13 @@ export async function POST(request: Request) {
     await productRepo.save(newProduct);
 
     // Log activity
-    const user = await getCurrentUser();
-    if (user) {
-      await logActivity(
-        user.userId,
-        "created product",
-        "product",
-        newProduct.id,
-        { name: newProduct.name }
-      );
-    }
+    await logActivity(
+      user.userId,
+      "created product",
+      "product",
+      newProduct.id,
+      { name: newProduct.name }
+    );
 
     return NextResponse.json(
       {

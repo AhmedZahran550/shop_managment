@@ -25,10 +25,9 @@ if (process.env.NODE_ENV !== "production") {
   }
 }
 
-// Force disable TLS verification for self-signed certificates (Supabase/Dev)
-if (process.env.NODE_ENV !== "production") {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-}
+// Force disable TLS verification for self-signed certificates
+// This is needed for development databases like Supabase or other hosted databases
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 import { User } from "../entities/User";
 import { Product } from "../entities/Product";
 import { Category } from "../entities/Category";

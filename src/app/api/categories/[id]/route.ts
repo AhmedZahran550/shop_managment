@@ -11,7 +11,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const user = await getCurrentUser();
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role !== "admin" && user.role !== "worker")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -60,7 +60,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     const user = await getCurrentUser();
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role !== "admin" && user.role !== "worker")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

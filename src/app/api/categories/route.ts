@@ -24,7 +24,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role !== "admin" && user.role !== "worker")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
