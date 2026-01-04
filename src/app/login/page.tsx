@@ -44,13 +44,13 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
       <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
-          Shop Management
+          نظام إدارة المتاجر
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Username
+              اسم المستخدم
             </label>
             <input
               type="text"
@@ -64,7 +64,7 @@ export default function LoginPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
+              كلمة المرور
             </label>
             <input
               type="password"
@@ -87,12 +87,12 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400"
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Demo Accounts:</p>
+          <p>حسابات تجريبية:</p>
           <p className="font-mono">admin / admin123</p>
           <p className="font-mono">worker / worker123</p>
         </div>

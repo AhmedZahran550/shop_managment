@@ -117,7 +117,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between h-auto sm:h-16 items-center py-4 sm:py-0 gap-4 sm:gap-0">
             <h1 className="text-2xl font-bold text-gray-900">
-              Shop Management
+              نظام إدارة المتاجر
             </h1>
             <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
               <span className="text-sm text-gray-600">
@@ -127,7 +127,7 @@ export default function DashboardPage() {
                 onClick={handleLogout}
                 className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
               >
-                Logout
+                تسجيل الخروج
               </button>
             </div>
           </div>
@@ -136,13 +136,13 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8">Dashboard</h2>
+        <h2 className="text-3xl font-bold text-gray-900 mb-8">لوحة التحكم</h2>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
-              Total Products
+              إجمالي المنتجات
             </h3>
             <p className="text-4xl font-bold text-blue-600">
               {stats.totalProducts}
@@ -151,7 +151,7 @@ export default function DashboardPage() {
 
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
-              Recent Activities
+              نشاطات حديثة
             </h3>
             <p className="text-4xl font-bold text-green-600">
               {stats.recentActivities}
@@ -159,9 +159,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">
-              Your Role
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">دورك</h3>
             <p className="text-2xl font-bold text-purple-600 capitalize">
               {user.role}
             </p>
@@ -171,13 +169,13 @@ export default function DashboardPage() {
         {/* Product Search and Grid */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <h3 className="text-xl font-bold text-gray-900">All Products</h3>
+            <h3 className="text-xl font-bold text-gray-900">جميع المنتجات</h3>
             <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center w-full sm:w-auto">
               {user.role === "admin" && (
                 <Link
                   href="/dashboard/products/new"
                   className="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 px-4 shadow-sm"
-                  title="Add New Product"
+                  title="إضافة منتج جديد"
                 >
                   <svg
                     className="w-5 h-5"
@@ -192,13 +190,13 @@ export default function DashboardPage() {
                       d="M12 4v16m8-8H4"
                     />
                   </svg>
-                  <span>Add Product</span>
+                  <span>إضافة منتج</span>
                 </Link>
               )}
               <div className="relative w-full sm:w-64">
                 <input
                   type="text"
-                  placeholder="Search products..."
+                  placeholder="ابحث عن منتجات..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white"
@@ -226,7 +224,7 @@ export default function DashboardPage() {
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white"
             >
-              <option value="">All Categories</option>
+              <option value="">جميع الفئات</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
@@ -239,20 +237,20 @@ export default function DashboardPage() {
               onChange={(e) => setSortOrder(e.target.value)}
               className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white"
             >
-              <option value="recent">Recently Added</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
+              <option value="recent">المضافة حديثاً</option>
+              <option value="price_asc">السعر: من الأقل للأعلى</option>
+              <option value="price_desc">السعر: من الأعلى للأقل</option>
             </select>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {isLoading ? (
               <div className="col-span-full text-center py-8 text-gray-500">
-                Loading products...
+                جاري تحميل المنتجات...
               </div>
             ) : filteredProducts.length === 0 ? (
               <div className="col-span-full text-center py-8 text-gray-500">
-                No products found matching "{searchQuery}"
+                لا توجد منتجات تطابق "{searchQuery}"
               </div>
             ) : (
               filteredProducts.map((product) => (
@@ -269,7 +267,7 @@ export default function DashboardPage() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        No Image
+                        لا توجد صورة
                       </div>
                     )}
                   </div>
@@ -279,11 +277,11 @@ export default function DashboardPage() {
                     </h4>
                     <div className="flex justify-between items-end">
                       <div>
-                        <p className="text-xs text-gray-500">Base Price</p>
+                        <p className="text-xs text-gray-500">السعر الأساسي</p>
                         <p className="text-gray-700 ">{product.base_price}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs text-gray-500">Selling Price</p>
+                        <p className="text-xs text-gray-500">سعر البيع</p>
                         <p className="text-xl font-bold text-blue-600">
                           {product.selling_price}
                         </p>

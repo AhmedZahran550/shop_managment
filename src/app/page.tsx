@@ -62,13 +62,13 @@ export default function HomePage() {
               href="/dashboard"
               className="text-2xl font-bold text-gray-900"
             >
-              Shop Management
+              نظام إدارة المتاجر
             </Link>
             <Link
               href="/dashboard"
               className="text-gray-600 hover:text-gray-900"
             >
-              Dashboard
+              لوحة التحكم
             </Link>
           </div>
         </div>
@@ -76,12 +76,12 @@ export default function HomePage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Products</h1>
+          <h1 className="text-3xl font-bold text-gray-900">المنتجات</h1>
           <Link
             href="/products/new"
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
           >
-            Add Product
+            إضافة منتج
           </Link>
         </div>
 
@@ -92,7 +92,7 @@ export default function HomePage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search products..."
+              placeholder="ابحث عن منتجات..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
             />
           </div>
@@ -102,7 +102,7 @@ export default function HomePage() {
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
             >
-              <option value="">All Categories</option>
+              <option value="">جميع الفئات</option>
               {categories.map((cat: any) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
@@ -115,11 +115,11 @@ export default function HomePage() {
         {/* Products Grid */}
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-600">Loading products...</p>
+            <p className="text-gray-600">جاري تحميل المنتجات...</p>
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600">No products found</p>
+            <p className="text-gray-600">لا توجد منتجات</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -145,7 +145,7 @@ export default function HomePage() {
                   </h3>
                   {product.size && (
                     <p className="text-sm text-gray-600 mb-2">
-                      Size: {product.size}
+                      الحجم: {product.size}
                     </p>
                   )}
                   <div className="flex justify-between items-center">
@@ -161,7 +161,7 @@ export default function HomePage() {
                       href={`/products/${product.id}/edit`}
                       className="text-blue-600 hover:text-blue-800"
                     >
-                      Edit
+                      تعديل
                     </Link>
                   </div>
                 </div>
