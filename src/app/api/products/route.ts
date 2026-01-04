@@ -56,3 +56,70 @@ export async function GET(request: Request) {
     );
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const formData = await request.formData();
+    const name = formData.get("name") as string;
+    const categoryId = formData.get("categoryId") as string;
+    const basePrice = formData.get("basePrice") as string;
+    const sellingPrice = formData.get("sellingPrice") as string;
+    const image = formData.get("image") as File | null;
+
+    if (!name || !categoryId || !basePrice || !sellingPrice) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    let imageUrl = "";
+
+    if (image) {
+      // Upload to Cloudinary
+      const arrayBuffer = await image.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const cloudinary = (await import("@/lib/cloudinary")).default;
+
+      await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream({ folder: "shop-products" }, (error, result) => {
+            if (error) {
+              reject(error);
+              return;
+            }
+            imageUrl = result?.secure_url || "";
+            resolve(result);
+          })
+          .end(buffer);
+      });
+    }
+
+    const dataSource = await getDataSource();
+    const productRepo = dataSource.getRepository(Product);
+
+    const newProduct = productRepo.create({
+      name,
+      category_id: categoryId,
+      base_price: parseFloat(basePrice),
+      selling_price: parseFloat(sellingPrice),
+      image_url: imageUrl,
+    });
+
+    await productRepo.save(newProduct);
+
+    return NextResponse.json(
+      {
+        data: newProduct,
+        message: "Product created successfully",
+      },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error("Create product error:", error);
+    return NextResponse.json(
+      { error: "Failed to create product", details: error.message },
+      { status: 500 }
+    );
+  }
+}
