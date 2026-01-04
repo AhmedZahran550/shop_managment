@@ -236,9 +236,9 @@ export default function AddProductPage() {
                   className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900 font-medium bg-slate-50 transition-all shadow-sm"
                 >
                   <option value="">اختر الحجم</option>
-                  <option value="small">صغير</option>
-                  <option value="medium">متوسط</option>
-                  <option value="large">كبير</option>
+                  <option value="صغير">صغير</option>
+                  <option value="متوسط">متوسط</option>
+                  <option value="كبير">كبير</option>
                 </select>
               </div>
 

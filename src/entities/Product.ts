@@ -29,8 +29,8 @@ export class Product {
   @Column({ nullable: true })
   image_url!: string;
 
-  @Column({ type: "enum", enum: ["small", "medium", "large"], nullable: true })
-  size?: "small" | "medium" | "large";
+  @Column({ type: "enum", enum: ["صغير", "متوسط", "كبير"], nullable: true })
+  size?: "صغير" | "متوسط" | "كبير";
 
   @Column({ nullable: true })
   weight?: string;

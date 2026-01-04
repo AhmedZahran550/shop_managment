@@ -127,7 +127,7 @@ export async function POST(request: Request) {
       base_price: parseFloat(basePrice),
       selling_price: parseFloat(sellingPrice),
       image_url: imageUrl,
-      size: size ? (size as "small" | "medium" | "large") : undefined,
+      size: size ? (size as "صغير" | "متوسط" | "كبير") : undefined,
       weight: weight || undefined,
     });
 

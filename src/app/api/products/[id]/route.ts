@@ -67,7 +67,7 @@ export async function PUT(
     product.base_price = parseFloat(basePrice);
     product.selling_price = parseFloat(sellingPrice);
     product.image_url = imageUrl;
-    product.size = size ? (size as "small" | "medium" | "large") : undefined;
+    product.size = size ? (size as "صغير" | "متوسط" | "كبير") : undefined;
     product.weight = weight || undefined;
 
     await productRepo.save(product);

@@ -398,13 +398,7 @@ export default function DashboardPage() {
                     </h4>
                     {(product.size || product.weight) && (
                       <div className="text-sm text-slate-500 mb-3 flex gap-2">
-                        {product.size && (
-                          <span>
-                            {product.size === "small" && "صغير"}
-                            {product.size === "medium" && "متوسط"}
-                            {product.size === "large" && "كبير"}
-                          </span>
-                        )}
+                        {product.size && <span>{product.size}</span>}
                         {product.size && product.weight && <span>•</span>}
                         {product.weight && <span>{product.weight}</span>}
                       </div>
@@ -579,9 +573,9 @@ export default function DashboardPage() {
                     className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900"
                   >
                     <option value="">اختر الحجم</option>
-                    <option value="small">صغير</option>
-                    <option value="medium">متوسط</option>
-                    <option value="large">كبير</option>
+                    <option value="صغير">صغير</option>
+                    <option value="متوسط">متوسط</option>
+                    <option value="كبير">كبير</option>
                   </select>
                 </div>
                 <div>
