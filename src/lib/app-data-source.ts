@@ -1,5 +1,10 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
+
+// Force disable TLS verification for self-signed certificates (Supabase/Dev)
+if (process.env.NODE_ENV !== "production") {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
 import { User } from "../entities/User";
 import { Product } from "../entities/Product";
 import { Category } from "../entities/Category";
@@ -18,11 +23,12 @@ export const AppDataSource = new DataSource({
   entities: [User, Product, Category, Activity],
   subscribers: [],
   migrations: [],
-  ...(process.env.NODE_ENV === "production"
-    ? {
-        ssl: {
-          rejectUnauthorized: false,
-        },
-      }
-    : {}),
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  extra: {
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  },
 });
