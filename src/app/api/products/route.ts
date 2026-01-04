@@ -71,6 +71,8 @@ export async function POST(request: Request) {
     const categoryId = formData.get("categoryId") as string;
     const basePrice = formData.get("basePrice") as string;
     const sellingPrice = formData.get("sellingPrice") as string;
+    const size = formData.get("size") as string;
+    const weight = formData.get("weight") as string;
     const image = formData.get("image") as File | null;
 
     if (!name || !categoryId || !basePrice || !sellingPrice) {
@@ -111,6 +113,8 @@ export async function POST(request: Request) {
       base_price: parseFloat(basePrice),
       selling_price: parseFloat(sellingPrice),
       image_url: imageUrl,
+      size: size ? (size as "small" | "medium" | "large") : undefined,
+      weight: weight || undefined,
     });
 
     await productRepo.save(newProduct);

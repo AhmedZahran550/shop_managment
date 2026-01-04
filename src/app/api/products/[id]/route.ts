@@ -20,6 +20,8 @@ export async function PUT(
     const categoryId = formData.get("categoryId") as string;
     const basePrice = formData.get("basePrice") as string;
     const sellingPrice = formData.get("sellingPrice") as string;
+    const size = formData.get("size") as string;
+    const weight = formData.get("weight") as string;
     const image = formData.get("image") as File | null;
 
     if (!name || !categoryId || !basePrice || !sellingPrice) {
@@ -65,6 +67,8 @@ export async function PUT(
     product.base_price = parseFloat(basePrice);
     product.selling_price = parseFloat(sellingPrice);
     product.image_url = imageUrl;
+    product.size = size ? (size as "small" | "medium" | "large") : undefined;
+    product.weight = weight || undefined;
 
     await productRepo.save(product);
 

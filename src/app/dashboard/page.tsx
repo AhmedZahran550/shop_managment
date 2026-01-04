@@ -28,6 +28,8 @@ export default function DashboardPage() {
     categoryId: "",
     basePrice: "",
     sellingPrice: "",
+    size: "",
+    weight: "",
   });
   const [editImage, setEditImage] = useState<File | null>(null);
 
@@ -102,6 +104,8 @@ export default function DashboardPage() {
       categoryId: product.category_id,
       basePrice: product.base_price.toString(),
       sellingPrice: product.selling_price.toString(),
+      size: product.size || "",
+      weight: product.weight || "",
     });
     setEditImage(null);
     setConfirmAction(null);
@@ -119,6 +123,12 @@ export default function DashboardPage() {
       formData.append("categoryId", editFormData.categoryId);
       formData.append("basePrice", editFormData.basePrice);
       formData.append("sellingPrice", editFormData.sellingPrice);
+      if (editFormData.size) {
+        formData.append("size", editFormData.size);
+      }
+      if (editFormData.weight) {
+        formData.append("weight", editFormData.weight);
+      }
       if (editImage) {
         formData.append("image", editImage);
       }
@@ -383,9 +393,22 @@ export default function DashboardPage() {
                     )}
                   </div>
                   <div className="p-5">
-                    <h4 className="font-bold text-lg text-slate-900 mb-3 truncate leading-snug">
+                    <h4 className="font-bold text-lg text-slate-900 mb-1 truncate leading-snug">
                       {product.name}
                     </h4>
+                    {(product.size || product.weight) && (
+                      <div className="text-sm text-slate-500 mb-3 flex gap-2">
+                        {product.size && (
+                          <span>
+                            {product.size === "small" && "صغير"}
+                            {product.size === "medium" && "متوسط"}
+                            {product.size === "large" && "كبير"}
+                          </span>
+                        )}
+                        {product.size && product.weight && <span>•</span>}
+                        {product.weight && <span>{product.weight}</span>}
+                      </div>
+                    )}
                     {(user.role === "admin" || user.role === "worker") && (
                       <div className="flex gap-2 mb-3">
                         <button
@@ -513,7 +536,7 @@ export default function DashboardPage() {
                         basePrice: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900"
                   />
                 </div>
                 <div>
@@ -530,7 +553,43 @@ export default function DashboardPage() {
                         sellingPrice: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    الحجم (اختياري)
+                  </label>
+                  <select
+                    value={editFormData.size}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, size: e.target.value })
+                    }
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900"
+                  >
+                    <option value="">اختر الحجم</option>
+                    <option value="small">صغير</option>
+                    <option value="medium">متوسط</option>
+                    <option value="large">كبير</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    الوزن (اختياري)
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.weight}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        weight: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900"
+                    placeholder="مثال: 2 كيلو، 500 جرام"
                   />
                 </div>
               </div>

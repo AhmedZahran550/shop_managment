@@ -15,6 +15,8 @@ export default function AddProductPage() {
     categoryId: "",
     basePrice: "",
     sellingPrice: "",
+    size: "",
+    weight: "",
   });
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -61,6 +63,12 @@ export default function AddProductPage() {
       data.append("categoryId", formData.categoryId);
       data.append("basePrice", formData.basePrice);
       data.append("sellingPrice", formData.sellingPrice);
+      if (formData.size) {
+        data.append("size", formData.size);
+      }
+      if (formData.weight) {
+        data.append("weight", formData.weight);
+      }
       if (image) {
         data.append("image", image);
       }
@@ -213,6 +221,39 @@ export default function AddProductPage() {
                     <span className="text-slate-500 font-bold">$</span>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  الحجم (اختياري)
+                </label>
+                <select
+                  name="size"
+                  value={formData.size}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900 font-medium bg-slate-50 transition-all shadow-sm"
+                >
+                  <option value="">اختر الحجم</option>
+                  <option value="small">صغير</option>
+                  <option value="medium">متوسط</option>
+                  <option value="large">كبير</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  الوزن (اختياري)
+                </label>
+                <input
+                  type="text"
+                  name="weight"
+                  value={formData.weight}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900 font-medium bg-slate-50 transition-all shadow-sm"
+                  placeholder="مثال: 2 كيلو، 500 جرام"
+                />
               </div>
             </div>
 

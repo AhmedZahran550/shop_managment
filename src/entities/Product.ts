@@ -29,6 +29,12 @@ export class Product {
   @Column({ nullable: true })
   image_url!: string;
 
+  @Column({ type: "enum", enum: ["small", "medium", "large"], nullable: true })
+  size?: "small" | "medium" | "large";
+
+  @Column({ nullable: true })
+  weight?: string;
+
   @Column("tsvector", { select: false, nullable: true })
   search_vector!: any;
 
