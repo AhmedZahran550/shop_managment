@@ -24,9 +24,6 @@ if (process.env.NODE_ENV !== "production") {
     console.warn("Failed to load .env.local manually:", err);
   }
 }
-
-// Force disable TLS verification for self-signed certificates
-// This is needed for development databases like Supabase or other hosted databases
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 import { User } from "../entities/User";
 import { Product } from "../entities/Product";
