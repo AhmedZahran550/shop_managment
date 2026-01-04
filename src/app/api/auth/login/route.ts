@@ -15,7 +15,49 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error("JWT_SECRET is not defined");
+    }
+    // 1. Check for Super Admin (Env-based)
+    const superUser = process.env.SUPER_USER_NAME;
+    const superPass = process.env.SUPER_USER_PASSWORD;
 
+    if (
+      superUser &&
+      superPass &&
+      username === superUser &&
+      password === superPass
+    ) {
+      const token = jwt.sign(
+        {
+          userId: "00000000-0000-0000-0000-000000000000",
+          username: superUser,
+          role: "admin",
+        },
+        secret,
+        { expiresIn: "7d" }
+      );
+
+      const response = NextResponse.json({
+        user: {
+          id: "00000000-0000-0000-0000-000000000000",
+          username: superUser,
+          role: "admin",
+        },
+      });
+
+      response.cookies.set("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: "/",
+      });
+
+      return response;
+    }
+
+    // 2. Normal Database User Login
     const dataSource = await getDataSource();
     const userRepo = dataSource.getRepository(User);
 
@@ -30,9 +72,6 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
-
-    const secret = process.env.JWT_SECRET || "fallback_dev_secret_key_123";
-
     const token = jwt.sign(
       { userId: user.id, username: user.username, role: user.role },
       secret,

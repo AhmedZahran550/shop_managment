@@ -1,11 +1,13 @@
-import { query } from "../index";
+import { NextResponse } from "next/server";
+import { getDataSource } from "@/lib/db";
+import { ShopCategory } from "@/lib/constants/categories";
+import { query } from "@/lib/db";
 import bcrypt from "bcryptjs";
-import { ShopCategory } from "../../constants/categories";
 
-async function seed() {
-  console.log("🌱 Starting seed...");
-
+export async function GET() {
   try {
+    console.log("🌱 Starting seed via API...");
+
     // 2. Create Categories
     const categoryValues = Object.values(ShopCategory);
 
@@ -64,13 +66,12 @@ async function seed() {
     }
     console.log("✅ Products seeded");
 
-    console.log("🎉 Database seeded successfully!");
-  } catch (error) {
+    return NextResponse.json({ message: "Database seeded successfully" });
+  } catch (error: any) {
     console.error("❌ Seed error:", error);
-    process.exit(1);
-  } finally {
-    process.exit(0);
+    return NextResponse.json(
+      { error: "Seed failed", details: error.message },
+      { status: 500 }
+    );
   }
 }
-
-seed();

@@ -84,25 +84,44 @@ export default function AddProductPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-2xl mx-auto px-4">
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">إضافة منتج جديد</h1>
-          <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
+    <div className="min-h-screen bg-slate-50 py-12 font-sans">
+      <div className="max-w-3xl mx-auto px-4">
+        <div className="mb-8 flex items-center justify-between">
+          <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <span className="text-indigo-600 text-3xl">✦</span>
+            إضافة منتج جديد
+          </h1>
+          <Link
+            href="/dashboard"
+            className="text-slate-500 hover:text-indigo-600 font-bold transition-colors flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm hover:shadow-md"
+          >
             إلغاء
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 sm:p-10">
           {error && (
-            <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl font-medium flex items-center gap-2">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-slate-700 mb-2">
                 اسم المنتج
               </label>
               <input
@@ -111,77 +130,104 @@ export default function AddProductPage() {
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900 font-medium bg-slate-50 transition-all shadow-sm"
                 placeholder="مثال: سماعة لاسلكية"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-slate-700 mb-2">
                 فئة المنتج
               </label>
-              <select
-                name="categoryId"
-                required
-                value={formData.categoryId}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
-              >
-                <option value="">اختر فئة</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  name="categoryId"
+                  required
+                  value={formData.categoryId}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900 font-medium bg-slate-50 transition-all shadow-sm appearance-none"
+                >
+                  <option value="">اختر فئة</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-4 text-slate-500">
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
                   السعر الأساسي ($)
                 </label>
-                <input
-                  type="number"
-                  name="basePrice"
-                  step="0.01"
-                  required
-                  value={formData.basePrice}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
-                  placeholder="0.00"
-                />
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="basePrice"
+                    step="0.01"
+                    required
+                    value={formData.basePrice}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900 font-medium bg-slate-50 transition-all shadow-sm pl-10"
+                    placeholder="0.00"
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="text-slate-500 font-bold">$</span>
+                  </div>
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
                   سعر البيع ($)
                 </label>
-                <input
-                  type="number"
-                  name="sellingPrice"
-                  step="0.01"
-                  required
-                  value={formData.sellingPrice}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
-                  placeholder="0.00"
-                />
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="sellingPrice"
+                    step="0.01"
+                    required
+                    value={formData.sellingPrice}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-900 font-medium bg-slate-50 transition-all shadow-sm pl-10"
+                    placeholder="0.00"
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="text-slate-500 font-bold">$</span>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-slate-700 mb-2">
                 صورة المنتج
               </label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
-                <div className="space-y-1 text-center">
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-200 border-dashed rounded-2xl hover:border-indigo-400 hover:bg-slate-50 transition-all bg-slate-50/50">
+                <div className="space-y-2 text-center">
                   {imagePreview ? (
-                    <div className="mb-4">
+                    <div className="mb-4 relative group">
                       <img
                         src={imagePreview}
                         alt="Preview"
-                        className="mx-auto h-48 object-contain"
+                        className="mx-auto h-64 object-contain rounded-lg shadow-sm"
                       />
                       <button
                         type="button"
@@ -189,31 +235,46 @@ export default function AddProductPage() {
                           setImage(null);
                           setImagePreview(null);
                         }}
-                        className="text-sm text-red-600 hover:text-red-800 mt-2"
+                        className="absolute top-2 right-2 bg-white text-red-600 p-2 rounded-full shadow-md hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                        title="إزالة الصورة"
                       >
-                        إزالة الصورة
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
                       </button>
                     </div>
                   ) : (
                     <>
-                      <svg
-                        className="mx-auto h-12 w-12 text-gray-400"
-                        stroke="currentColor"
-                        fill="none"
-                        viewBox="0 0 48 48"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                          strokeWidth={2}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <div className="flex text-sm text-gray-600">
+                      <div className="mx-auto h-16 w-16 text-indigo-100 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
+                        <svg
+                          className="h-8 w-8 text-indigo-500"
+                          stroke="currentColor"
+                          fill="none"
+                          viewBox="0 0 48 48"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                            strokeWidth={2}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                      <div className="flex text-sm text-slate-600 justify-center">
                         <label
                           htmlFor="file-upload"
-                          className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                          className="relative cursor-pointer bg-white rounded-md font-bold text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                         >
                           <span>اختر ملفاً</span>
                           <input
@@ -225,9 +286,9 @@ export default function AddProductPage() {
                             onChange={handleImageChange}
                           />
                         </label>
-                        <p className="pl-1">أو اسحبه هنا</p>
+                        <p className="pl-1 text-slate-500">أو اسحبه هنا</p>
                       </div>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-slate-400">
                         PNG, JPG, GIF حتى 10 ميجابايت
                       </p>
                     </>
@@ -236,16 +297,16 @@ export default function AddProductPage() {
               </div>
             </div>
 
-            <div className="flex justify-end pt-4">
+            <div className="flex justify-end pt-6 border-t border-slate-100">
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 flex items-center"
+                className="bg-indigo-600 text-white px-8 py-3.5 rounded-xl hover:bg-indigo-700 transition-all disabled:bg-indigo-300 disabled:cursor-not-allowed flex items-center gap-2 font-bold shadow-lg shadow-indigo-600/20 active:scale-95"
               >
                 {loading ? (
                   <>
                     <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      className="animate-spin h-5 w-5 text-white"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -267,7 +328,22 @@ export default function AddProductPage() {
                     جاري الإنشاء...
                   </>
                 ) : (
-                  "إنشاء المنتج"
+                  <>
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                    إنشاء المنتج
+                  </>
                 )}
               </button>
             </div>
