@@ -265,7 +265,7 @@ export default function DashboardPage() {
                       <img
                         src={product.image_url}
                         alt={product.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain bg-white"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -280,14 +280,12 @@ export default function DashboardPage() {
                     <div className="flex justify-between items-end">
                       <div>
                         <p className="text-xs text-gray-500">Base Price</p>
-                        <p className="text-gray-700 line-through">
-                          ${product.base_price}
-                        </p>
+                        <p className="text-gray-700 ">{product.base_price}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-gray-500">Selling Price</p>
                         <p className="text-xl font-bold text-blue-600">
-                          ${product.selling_price}
+                          {product.selling_price}
                         </p>
                       </div>
                     </div>
