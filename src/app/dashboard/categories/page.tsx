@@ -20,7 +20,7 @@ export default function CategoriesPage() {
       return;
     }
     const parsed = JSON.parse(userData);
-    if (parsed.role !== "admin") {
+    if (parsed.role !== "admin" && parsed.role !== "worker") {
       router.push("/dashboard");
       return;
     }

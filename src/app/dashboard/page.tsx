@@ -120,7 +120,7 @@ export default function DashboardPage() {
               <span className="text-indigo-600 text-3xl">✦</span>
               نظام إدارة المتاجر
             </h1>
-            {user.role === "admin" && (
+            {(user.role === "admin" || user.role === "worker") && (
               <div className="flex gap-1 bg-slate-100 p-1 rounded-xl mx-4">
                 <Link
                   href="/dashboard/categories"
@@ -194,7 +194,7 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <h3 className="text-2xl font-bold text-slate-800">جميع المنتجات</h3>
             <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center w-full sm:w-auto">
-              {user.role === "admin" && (
+              {(user.role === "admin" || user.role === "worker") && (
                 <Link
                   href="/dashboard/products/new"
                   className="bg-indigo-600 text-white py-2.5 px-6 rounded-xl hover:bg-indigo-700 transition-all font-bold shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2"
