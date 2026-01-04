@@ -122,7 +122,7 @@ export default function AddProductPage() {
           <form onSubmit={handleSubmit} className="space-y-8">
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">
-                اسم المنتج
+                اسم الصنف
               </label>
               <input
                 type="text"
@@ -137,7 +137,7 @@ export default function AddProductPage() {
 
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">
-                فئة المنتج
+                فئة الصنف
               </label>
               <div className="relative">
                 <select
@@ -218,7 +218,7 @@ export default function AddProductPage() {
 
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">
-                صورة المنتج
+                صورة الصنف
               </label>
               <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-200 border-dashed rounded-2xl hover:border-indigo-400 hover:bg-slate-50 transition-all bg-slate-50/50">
                 <div className="space-y-2 text-center">

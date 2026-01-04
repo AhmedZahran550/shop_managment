@@ -162,21 +162,23 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wide mb-2">
-              إجمالي المنتجات
+              إجمالي الاصناف
             </h3>
             <p className="text-4xl font-black text-slate-800">
               {stats.totalProducts}
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
-            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wide mb-2">
-              نشاطات حديثة
-            </h3>
-            <p className="text-4xl font-black text-indigo-600">
-              {stats.recentActivities}
-            </p>
-          </div>
+          {user.role === "admin" && (
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
+              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wide mb-2">
+                نشاطات حديثة
+              </h3>
+              <p className="text-4xl font-black text-indigo-600">
+                {stats.recentActivities}
+              </p>
+            </div>
+          )}
 
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wide mb-2">
@@ -198,7 +200,7 @@ export default function DashboardPage() {
                 <Link
                   href="/dashboard/products/new"
                   className="bg-indigo-600 text-white py-2.5 px-6 rounded-xl hover:bg-indigo-700 transition-all font-bold shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2"
-                  title="إضافة منتج جديد"
+                  title="إضافة صنف جديد"
                 >
                   <svg
                     className="w-5 h-5"
@@ -213,7 +215,7 @@ export default function DashboardPage() {
                       d="M12 4v16m8-8H4"
                     />
                   </svg>
-                  <span>إضافة منتج</span>
+                  <span>إضافة صنف جديد</span>
                 </Link>
               )}
               <div className="relative w-full sm:w-72">
